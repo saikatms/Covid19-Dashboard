@@ -26,7 +26,7 @@
                     </div>
                     <!-- cases table -->
                     <table class="table align-items-center table-flush sortable table-hover" id="table">
-                        <thead class="thead-light">
+                        <thead class="thead-dark">
                         <tr>
                             <th>State</th>
                             <th>Confirmed</th>
@@ -36,7 +36,7 @@
                         </thead>
                         <tbody>
                         {% for i, row in global_cases.iterrows %}
-                        <tr>
+                        <tr class="table-header">
                             <td class="font-weight-bold">{{ row.state | truncatechars:14 }}</td>
                             <td>{{ row.confirmed | intcomma }}</td>
                             <td>{{ row.recovered | intcomma }}</td>
@@ -74,6 +74,10 @@ $('#search').keyup(function() {
         var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
         return !~text.indexOf(val);
     }).hide();
+});
+
+$('.table-header').click(function(){
+    $(this).nextUntil('tr.table-header').slideToggle(1000);
 });
 </script>
 {% endblock javascripts %}

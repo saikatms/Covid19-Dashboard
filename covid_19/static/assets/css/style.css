@@ -1897,6 +1897,12 @@ pre code {
   border-color: #1f3a68;
 }
 
+.table .thead-black th {
+  color: #f8f9fe;
+  background-color: #000000;
+  border-color: #051021;
+}
+
 .table .thead-light th {
   color: #8898aa;
   background-color: #f6f9fc;

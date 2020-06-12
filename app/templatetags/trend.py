@@ -25,6 +25,26 @@ CONDITIONS = {
         "GT_0": (RED, ARROW_UP),
         "LT_0": (GREEN, ARROW_DOWN)
     },
+    'dailyconfirmed': {
+        "GT_0": (RED, ARROW_UP),
+        "LT_0": (GREEN, ARROW_DOWN)
+    },
+    'dailydeceased': {
+        "GT_0": (RED, ARROW_UP),
+        "LT_0": (GREEN, ARROW_DOWN)
+    },
+    'dailyrecovered': {
+        "GT_0": (RED, ARROW_UP),
+        "LT_0": (GREEN, ARROW_DOWN)
+    },
+    'actived_increases': {
+        "GT_0": (RED, ARROW_UP),
+        "LT_0": (GREEN, ARROW_DOWN)
+    },
+    'active_cases_rate': {
+        "GT_0": (RED, ARROW_UP),
+        "LT_0": (GREEN, ARROW_DOWN)
+    },
 }
 
 

@@ -456,10 +456,6 @@ animation: letter-flicker-death-rate  3s linear infinite;
     text-shadow: 0 0 15px rgb(255, 157, 0);
   }
 }
-
-
-
-
 @keyframes border-flicker {
   2% {
     border: 3px solid rgb(0, 180, 230);
@@ -526,3 +522,7 @@ animation: letter-flicker-death-rate  3s linear infinite;
     0 0 12px -1px rgb(0, 180, 230) inset;
   }
 }
+
+
+
+

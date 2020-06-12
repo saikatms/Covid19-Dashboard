@@ -32,7 +32,7 @@ def daily_report(date_string=None):
         file_date = yesterday.strftime('%m-%d-%Y')
     else:
         file_date = date_string
-    print(report_directory + file_date + '.csv')
+    # print(report_directory + file_date + '.csv')
     df = pd.read_csv(report_directory + file_date + '.csv', dtype={"FIPS": str})
     return df
 
@@ -53,7 +53,35 @@ def daily_report_india(date_string=None):
     json_url = urlopen(report_directory)
     df = json.loads(json_url.read())
     statewise_data = df['statewise']
+    # cases_time_series=df['cases_time_series'][-1]
+    # print(cases_time_series)
+    # # print()
     return statewise_data
+
+
+
+def todays_report(date_string=None):
+    report_directory = "https://api.covid19india.org/data.json";
+
+    if date_string is None:
+        yesterday = datetime.date.today() - datetime.timedelta(days=2)
+        file_date = yesterday.strftime('%m-%d-%Y')
+    else:
+        file_date = date_string
+
+    # df = pd.read_csv(report_directory + file_date + '.csv', dtype={"FIPS": str})
+    json_url = urlopen(report_directory)
+    df = json.loads(json_url.read())
+    cases_time_series = df['cases_time_series'][-1]
+    active_today=int(cases_time_series['totalconfirmed'])-(int(cases_time_series['totalrecovered'])-int(cases_time_series['totaldeceased']))
+    yesterday_data= df['cases_time_series'][-2]
+    active_yesterday=int(yesterday_data['totalconfirmed'])-(int(yesterday_data['totalrecovered'])-int(yesterday_data['totaldeceased']))
+    # print(type(cases_time_series))
+    # print(active_today,active_yesterday)
+    increased=active_today-active_yesterday
+    cases_time_series['active_total']=active_today
+    cases_time_series['active_incrased']=increased
+    return cases_time_series
 
 
 # def daily_confirmed():
@@ -104,6 +132,13 @@ def recovered_report():
     # df = pd.read_csv(
     #     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv')
     # return df
+def active_report():
+    report_directory = "https://api.covid19india.org/data.json";
+    json_url = urlopen(report_directory)
+    df = json.loads(json_url.read())
+    cases_time_series = df['cases_time_series']
+    return cases_time_series
+
 
 
 def realtime_growth(date_string=None, weekly=False, monthly=False):
@@ -127,12 +162,17 @@ def realtime_growth(date_string=None, weekly=False, monthly=False):
     for conf_data in j_data:
         date = time.strftime("%m/%d/%y", time.strptime(conf_data['date'] + '2020', "%d %B %Y"))
         df2[date] = conf_data['totaldeceased']
+
     df3 = pd.Series()
     for conf_data in j_data:
         date = time.strftime("%m/%d/%y", time.strptime(conf_data['date'] + '2020', "%d %B %Y"))
         df3[date] = conf_data['totalrecovered']
+    df4 = pd.Series()
+    for conf_data in j_data:
+        date = time.strftime("%m/%d/%y", time.strptime(conf_data['date'] + '2020', "%d %B %Y"))
+        df4[date] = int(conf_data['totalconfirmed'])-(int(conf_data['totaldeceased'])+int(conf_data['totalrecovered']))
     growth_df = pd.DataFrame([])
-    growth_df['Confirmed'], growth_df['Deaths'], growth_df['Recovered'] = df1, df2, df3
+    growth_df['Confirmed'], growth_df['Deaths'], growth_df['Recovered'],growth_df['active_cases_rate'] = df1, df2, df3,df4
 
     growth_df.index = growth_df.index.rename('Date')
 
@@ -174,6 +214,8 @@ def percentage_trends():
     trends_weekly = trends.append(pd.Series(data=rate_change, index=['Death_rate']))
     trends_dict = {"weekly_rate": trends_weekly}
     return trends_dict
+
+
 
 
 
