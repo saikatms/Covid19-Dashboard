@@ -72,30 +72,19 @@ def todays_report(date_string=None):
     # df = pd.read_csv(report_directory + file_date + '.csv', dtype={"FIPS": str})
     json_url = urlopen(report_directory)
     df = json.loads(json_url.read())
-    cases_time_series = df['cases_time_series'][-1]
-    active_today=int(cases_time_series['totalconfirmed'])-(int(cases_time_series['totalrecovered'])-int(cases_time_series['totaldeceased']))
-    yesterday_data= df['cases_time_series'][-2]
-    active_yesterday=int(yesterday_data['totalconfirmed'])-(int(yesterday_data['totalrecovered'])-int(yesterday_data['totaldeceased']))
+    live_data = df['statewise'][0]
+    active_today=int(live_data['active'])
+    yesterday_data= df['cases_time_series'][-1]
+    active_yesterday=int(yesterday_data['totalconfirmed'])-(int(yesterday_data['totalrecovered'])+int(yesterday_data['totaldeceased']))
     # print(type(cases_time_series))
     # print(active_today,active_yesterday)
     increased=active_today-active_yesterday
-    cases_time_series['active_total']=active_today
-    cases_time_series['active_incrased']=increased
-    return cases_time_series
+    # print(increased)
+    live_data['active_incrased']=increased
+    # print(live_data)
+    return live_data
 
 
-# def daily_confirmed():
-#     # returns the daily reported cases for respective date,
-#     # segmented globally and by country
-#     df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_cases.csv')
-#     return df
-#
-#
-# def daily_deaths():
-#     # returns the daily reported deaths for respective date
-#     df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_deaths.csv')
-#     return df
-#
 #
 def confirmed_report():
     # Returns time series version of total cases confirmed globally
@@ -233,20 +222,44 @@ def global_cases():
     return df
 
 #
-# def usa_counties():
-#     """[summary]: Returns live cases of USA at county-level
-#
-#     source:
-#         ³ nytimes
-#     Returns:
-#         [pd.DataFrame]
-#     """
-#     populations = pd.read_csv('https://raw.githubusercontent.com/balsama/us_counties_data/master/data/counties.csv')[
-#         ['FIPS Code', 'Population']]
-#     populations.rename(columns={'FIPS Code': 'fips'}, inplace=True)
-#     df = pd.read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv',
-#                      dtype={"fips": str}).iloc[:, :6]
-#     df = pd.merge(df, populations, on='fips')
-#     df['cases/capita'] = (df.cases / df.Population) * 100000  # per 100k residents
-#
-#     return df
+def usa_counties():
+    """[summary]: Returns live cases of USA at county-level
+
+    source:
+        ³ nytimes
+    Returns:
+        [pd.DataFrame]
+    """
+    populations = pd.read_csv('https://raw.githubusercontent.com/balsama/us_counties_data/master/data/counties.csv')[
+        ['FIPS Code', 'Population']]
+    populations.rename(columns={'FIPS Code': 'fips'}, inplace=True)
+    df = pd.read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv',
+                     dtype={"fips": str}).iloc[:, :6]
+    df = pd.merge(df, populations, on='fips')
+    df['cases/capita'] = (df.cases / df.Population) * 100000  # per 100k residents
+
+    return df
+
+
+def dist_data():
+    report_directory="https://api.covid19india.org/state_district_wise.json"
+    json_url=urlopen(report_directory)
+    json_data=json.loads(json_url.read())
+    dist_final={}
+    for data in json_data:
+        state=json_data[data]
+        for dist in state:
+            if dist=="districtData":
+                dist_data=state[dist]
+                dist_data_today = {}
+
+                for d_data in dist_data:
+                    # print(d_data)
+                    dist_data_today[d_data] = dist_data[d_data]
+            dist_final[state['statecode']]=dist_data_today
+    return dist_final
+
+                # print(state[dist])
+
+
+

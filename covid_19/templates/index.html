@@ -4,6 +4,9 @@
 {% block title %} Home {% endblock title %}
 {% block stylesheets %}
 <link href="/static/assets/css/style-sidenav.css" rel="stylesheet"/>
+<!--<link href="/static/assets/css/style-map.css" rel="stylesheet"/>-->
+
+
 {% endblock stylesheets %}
 {% block content %}
 
@@ -12,20 +15,21 @@
     <div class="container-fluid mt--7 bg-secondary">
         <div class="row mt-5">
             <div class="col-xl-6 mb-5 mb-xl-0">   <!-- statewise total stats  -->
-                <div class="">
+                <div class="tableresp">
                     <div class="card-header bg-transparent">
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase text-muted ls-1 mb-1">India | Sortable</h6>
                                 <h2 class="mb-0">Cases</h2>
                             </div>
-                            <div class="col text-right">
-                                <input type="text" id="search" placeholder="Type to search">
-                            </div>
+<!--                            <div class="col text-right">-->
+<!--                                <input type="search" placeholder="Search..." class="form-control search-input"-->
+<!--                                       id="search"/>-->
+<!--                            </div>-->
                         </div>
                     </div>
                     <!-- cases table -->
-                    <table class="table align-items-center table-flush sortable table-hover" id="table">
+                    <table class="table align-items-center table-flush table-sortable table-hover">
                         <thead class="thead-dark">
                         <tr>
                             <th>State</th>
@@ -37,31 +41,67 @@
                         <tbody>
                         {% for i, row in global_cases.iterrows %}
                         <tr class="table-header">
-                            <td class="font-weight-bold">{{ row.state | truncatechars:14 }}</td>
+                            <div class="dropdown-table">
+                                <td class="font-weight-bold">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                         {{ row.state | truncatechars:14 }}
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <table class="table align-items-center table-flush table-sortable table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>Dist</th>
+                                                <th>Confirmed</th>
+                                                <th>Recovered</th>
+                                                <th>Deaths</th>
+                                            </tr>
+                                            </thead>
+                                            {% for key,value in district_cases.items %}
+                                            {% ifequal key row.statecode %}
+                                            {% for key1,value1 in value.items %}
+                                            <tbody>
+                                            <tr>
+                                                <td>{{ key1 }}</td>
+                                                <td>{{ value1.confirmed }}</td>
+                                                <td>{{ value1.recovered }}</td>
+                                                <td>{{ value1.deceased }}</td>
+
+                                            </tr>
+                                            {% endfor %}
+
+                                            {% endifequal %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </td>
+                            </div>
                             <td>{{ row.confirmed | intcomma }}</td>
                             <td>{{ row.recovered | intcomma }}</td>
                             <td>{{ row.deaths | intcomma }}</td>
                         </tr>
+
+
                         {% endfor %}
-                        </tbody>
                         </tbody>
                     </table>
                 </div>
 
-
             </div>
-
         </div>
     </div>
+
 
     {% include "includes/footer.html" %}
 </div>
 
-
 {% endblock content %}
 
 <!-- Specific JS goes HERE -->
-{% block javascripts %}
+
 <script>
 $('.nav-item a').removeClass('active');
 $('.home-item a').addClass('active');
@@ -76,9 +116,12 @@ $('#search').keyup(function() {
     }).hide();
 });
 
-$('.table-header').click(function(){
-    $(this).nextUntil('tr.table-header').slideToggle(1000);
-});
+
+
+
 </script>
+{% block javascripts %}
+<script src="/static/assets/js/indiaState.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
 {% endblock javascripts %}
 

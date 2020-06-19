@@ -6,33 +6,38 @@ from . import getdata, plots, maps
 
 
 # Create your views here.
+
 def index(request):
     report_dict = ind_report()
     trends_dict = trends()
+    district_datas= dist_report()
     # growth_dict = growth_plot()
     # daily_growth = daily_growth_plot()
     india_map_dict = india_map()
     cases_dict = global_cases()
     # ** growth_dict, ** daily_growth, ** cases_dict, ** world_map_dict
-    # print(india_map_dict)
-
-    # print(report_dict)
-
+    # print(**district_datas)
+    world_map_dict = world_map()
+    # print(world_map_dict)
+    #
     # context = dict(report_dict, **trends_dict, **growth_dict, **cases_dict, **daily_growth, **world_map_dict)
-    context = dict(report_dict, **trends_dict, **cases_dict)
+    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas)
     return render(request, template_name='index.html', context=context)
 
 
+def dist_report():
+    df=getdata.dist_data()
+    return {"district_cases":df}
+
 def ind_report():
     df = getdata.todays_report(date_string=None)
-    # print(df)
-    Confirmed = int(df['totalconfirmed'])
-    Deaths = int(df['totaldeceased'])
-    Recovered = int(df['totalrecovered'])
-    dailyconfirmed = int(df['dailyconfirmed'])
-    dailydeceased = int(df['dailydeceased'])
-    dailyrecovered = int(df['dailyrecovered'])
-    total_active = int(df['active_total'])
+    Confirmed = int(df['confirmed'])
+    Deaths = int(df['deaths'])
+    Recovered = int(df['recovered'])
+    dailyconfirmed = int(df['deltaconfirmed'])
+    dailydeceased = int(df['deltadeaths'])
+    dailyrecovered = int(df['deltarecovered'])
+    total_active = int(df['active'])
     active_increases = int(df['active_incrased'])
     df = {'Confirmed': Confirmed, 'Deaths': Deaths, 'Recovered': Recovered, "dailyrecovered": dailyrecovered,
           "dailyconfirmed": dailyconfirmed, "dailydeceased": dailydeceased, "active_cases": total_active,
@@ -49,8 +54,7 @@ def ind_report():
                               'actived_increases': df['actived_increases'],
                               'active_cases': df['active_cases'],
                               'death_rate': death_rate}}
-    # print(report_dict["report"])
-    # print(report_dict)
+
 
     return report_dict["report"]
 
@@ -87,6 +91,10 @@ def india_map():
     return {'world_map': plot_div}
 #
 #
-# def mapspage(request):
-#     plot_div = maps.usa_map()
-#     return render(request, template_name='pages/maps.html', context={'usa_map': plot_div})
+def mapspage(request):
+    plot_div = maps.usa_map()
+    return render(request, template_name='pages/maps.html', context={'usa_map': plot_div})
+
+def world_map():
+    plot_div = maps.world_map()
+    return {'world_map': plot_div}

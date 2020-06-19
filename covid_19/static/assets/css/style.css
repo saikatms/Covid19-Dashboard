@@ -1886,7 +1886,7 @@ pre code {
   background-color: #e3ecf6;
 }
 
-.table-hover .table-active:hover>td,
+.table-hover .table-active:hover>td,table-layout:fixed;
 .table-hover .table-active:hover>th {
   background-color: #e3ecf6;
 }
@@ -1908,12 +1908,14 @@ pre code {
   background-color: #f6f9fc;
   border-color: #e9ecef;
 }
-
+dropdown
 .table-dark {
   color: #f8f9fe;
   background-color: #172b4d;
 }
-
+.dropdown-table{
+  display: inline-block;
+}
 .table-dark th,
 .table-dark td,
 .table-dark thead th {
