@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
@@ -70,14 +72,18 @@ def daily_growth():
     Returns:
         [plotly.graph_objs] -- [plot_div compatible with Django]
     """
-    daily_cases = getdata.daily_confirmed()[['date', 'World']]
-    daily_deaths = getdata.daily_deaths()[['date', 'World']]
+    daily_cases = getdata.daily_confirmed()
+    df_dailyCases = pd.DataFrame(daily_cases)
+    daily_confirmed = df_dailyCases[["date", "dailyconfirmed"]]
+    daily_deaths = df_dailyCases[["date", "dailydeceased"]]
+
     layout = Layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', legend=dict(x=0.025, y=1), height=310,
                     margin=dict(t=0, l=15, r=10, b=0), barmode='stack')
     fig = go.Figure(layout=layout)
-    daily_deaths_trace = go.Bar(x=daily_deaths.date, y=daily_deaths.World, name='Deaths', marker_color='#f5365c')
-    daily_cases_trace = go.Bar(x=daily_cases.date, y=daily_cases.World, name='Cases', visible='legendonly')
-
+    daily_deaths_trace = go.Bar(x=daily_deaths.date, y=daily_deaths.dailydeceased, name='Deaths',
+                                marker_color='#f5365c')
+    daily_cases_trace = go.Bar(x=daily_confirmed.date, y=daily_confirmed.dailyconfirmed, name='Confirmed',
+                               visible='legendonly')
     fig.update_xaxes(
         rangeselector=dict(
             buttons=list([
@@ -87,9 +93,8 @@ def daily_growth():
                 dict(label='T', step='all')
             ]))
     )
-
     fig.update_yaxes(gridcolor='#fff')
     fig.add_traces([daily_cases_trace, daily_deaths_trace])
     plot_div = plot(fig, output_type='div', config={'displayModeBar': False})
-
     return plot_div
+

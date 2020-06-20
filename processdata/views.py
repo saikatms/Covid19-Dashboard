@@ -12,8 +12,8 @@ def index(request):
     trends_dict = trends()
     district_datas= dist_report()
     # growth_dict = growth_plot()
-    # daily_growth = daily_growth_plot()
-    india_map_dict = india_map()
+    daily_growth = daily_growth_plot()
+    # india_map_dict = india_map()
     cases_dict = global_cases()
     # ** growth_dict, ** daily_growth, ** cases_dict, ** world_map_dict
     # print(**district_datas)
@@ -21,7 +21,7 @@ def index(request):
     # print(world_map_dict)
     #
     # context = dict(report_dict, **trends_dict, **growth_dict, **cases_dict, **daily_growth, **world_map_dict)
-    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas)
+    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas,**daily_growth)
     return render(request, template_name='index.html', context=context)
 
 
@@ -79,12 +79,11 @@ def global_cases():
     return {'global_cases': df}
 
 
-#
-#
-# def daily_growth_plot():
-#     plot_div = plots.daily_growth()
-#     return {'daily_growth_plot': plot_div}
-#
+
+def daily_growth_plot():
+    plot_div = plots.daily_growth()
+    return {'daily_growth_plot': plot_div}
+
 #
 def india_map():
     plot_div = maps.world_map()

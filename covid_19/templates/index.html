@@ -50,7 +50,7 @@
                             <td>{{ row.recovered | intcomma }}</td>
                             <td>{{ row.deaths | intcomma }}</td>
                         </tr>
-                        <tr class="subcategory">
+                        <tr class="subcategory dist-title">
                             <td>District</td>
                             <td>Confirmed</td>
                             <td>Recovered</td>
@@ -75,10 +75,40 @@
                     </table>
                 </div>
             </div>
+
+
+            <div class="col-xl-6">
+                <div class="card shadow">
+                    <div class="card-header bg-transparent">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h6 class="text-uppercase text-muted ls-1 mb-1">Global | Daily</h6>
+                                <h2 class="mb-0">Daily Growth</h2>
+                            </div>
+                            <div class="col text-right">
+                                <a class="btn btn-sm btn-white" tabindex="0" role="button" data-toggle="popover"
+                                   data-trigger="focus" title="Info"
+                                   data-content="Daily time series of cases. Bars can be stacked for relative adjacent comparison by toggling 'confirmed' cases.">
+                                    &nbsp;<i class="fas fa-info">&nbsp;</i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body plotly">
+                        <div class="chart">
+                            {% autoescape off %}
+                            {{ daily_growth_plot }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    {% include "includes/footer.html" %}
+{% include "includes/footer.html" %}
 </div>
 
 {% endblock content %}
@@ -101,6 +131,10 @@ $('#search').keyup(function() {
 $('.table-header').click(function(){
     $(this).nextUntil('tr.table-header').slideToggle(1000);
 });
+
+
+
+
 
 
 </script>

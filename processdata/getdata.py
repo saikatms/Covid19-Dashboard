@@ -81,11 +81,10 @@ def todays_report(date_string=None):
     increased=active_today-active_yesterday
     # print(increased)
     live_data['active_incrased']=increased
-    # print(live_data)
     return live_data
 
 
-#
+
 def confirmed_report():
     # Returns time series version of total cases confirmed globally
     report_directory = "https://api.covid19india.org/data.json";
@@ -259,7 +258,16 @@ def dist_data():
             dist_final[state['statecode']]=dist_data_today
     return dist_final
 
-                # print(state[dist])
-
-
+def daily_confirmed():
+    # returns the daily reported cases for respective date,
+    # segmented globally and by country
+    report_directory="https://api.covid19india.org/data.json";
+    json_url=urlopen(report_directory)
+    json_data=json.loads(json_url.read())
+    df = json_data['cases_time_series']
+    return df
+def daily_deaths():
+    # returns the daily reported deaths for respective date
+    df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_deaths.csv')
+    return df
 
