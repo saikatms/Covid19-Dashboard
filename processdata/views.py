@@ -69,11 +69,11 @@ def trends():
         'active_cases_rate': df['weekly_rate'].active_cases_rate}
 
 
-# def growth_plot():
-#     plot_div = plots.total_growth()
-#     return {'growth_plot': plot_div}
-#
-#
+def growth_plot():
+    plot_div = plots.total_growth()
+    return {'growth_plot': plot_div}
+
+
 def global_cases():
     df = getdata.global_cases()
     return {'global_cases': df}
@@ -82,6 +82,7 @@ def global_cases():
 
 def daily_growth_plot():
     plot_div = plots.daily_growth()
+    # print(plot_div)
     return {'daily_growth_plot': plot_div}
 
 #

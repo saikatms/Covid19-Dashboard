@@ -5,8 +5,8 @@
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #111;
   transition: 0.5s;
+  background-color: #131f63;
   overflow-x: hidden;
   padding-top: 60px;
   white-space: nowrap;
@@ -16,7 +16,7 @@
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 25px;
-  color: #818181;
+  color: #ffffff;
   display: block;
 }
 

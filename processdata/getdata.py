@@ -266,8 +266,15 @@ def daily_confirmed():
     json_data=json.loads(json_url.read())
     df = json_data['cases_time_series']
     return df
-def daily_deaths():
-    # returns the daily reported deaths for respective date
-    df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_deaths.csv')
-    return df
 
+# def daily_confirmed():
+#     # returns the daily reported cases for respective date,
+#     # segmented globally and by country
+#     df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_cases.csv')
+#     return df
+#
+#
+# def daily_deaths():
+#     # returns the daily reported deaths for respective date
+#     df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_deaths.csv')
+#     return df
