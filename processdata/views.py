@@ -16,12 +16,12 @@ def index(request):
     district_datas= dist_report()
     growth_dict = growth_plot()
     daily_growth = daily_growth_plot()
-    daily_state_growth=state_growth_plot()
+    #daily_state_growth=state_growth_plot()
     cases_dict = global_cases()
     world_map_dict = world_map()
     #
-    # context = dict(report_dict, **trends_dict, **growth_dict, **cases_dict, **daily_growth, **world_map_dict)
-    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas,**daily_growth,**daily_state_growth)
+    # context = dict(report_dict, **trends_dict, **growth_dict, **cases_dict, **daily_growth, **world_map_dict)daily_state_growth
+    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas,**daily_growth)
     return render(request, template_name='index.html', context=context)
 
 

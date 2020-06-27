@@ -125,16 +125,7 @@
                             </div>
                         </div>
                     </div>
-                    {% for key,value in daily_growth_state_plot.items %}
-                    <div class="card-body plotly" id="state_{{ key }}"
-                         style="display: none;">
-                        <div class="chart">
-                            {% autoescape off %}
-                            {{ value }}
-                            {% endautoescape %}
-                        </div>
-                    </div>
-                    {% endfor %}
+                    
                 </div>
             </div>
         </div>
