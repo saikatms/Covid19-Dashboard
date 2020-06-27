@@ -7,21 +7,21 @@ from . import getdata, plots, maps
 
 # Create your views here.
 
+
+
+
 def index(request):
     report_dict = ind_report()
     trends_dict = trends()
     district_datas= dist_report()
-    # growth_dict = growth_plot()
+    growth_dict = growth_plot()
     daily_growth = daily_growth_plot()
-    # india_map_dict = india_map()
+    daily_state_growth=state_growth_plot()
     cases_dict = global_cases()
-    # ** growth_dict, ** daily_growth, ** cases_dict, ** world_map_dict
-    # print(**district_datas)
     world_map_dict = world_map()
-    # print(world_map_dict)
     #
     # context = dict(report_dict, **trends_dict, **growth_dict, **cases_dict, **daily_growth, **world_map_dict)
-    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas,**daily_growth)
+    context = dict(report_dict, **trends_dict, **cases_dict,**district_datas,**daily_growth,**daily_state_growth)
     return render(request, template_name='index.html', context=context)
 
 
@@ -55,7 +55,6 @@ def ind_report():
                               'active_cases': df['active_cases'],
                               'death_rate': death_rate}}
 
-
     return report_dict["report"]
 
 
@@ -85,12 +84,12 @@ def daily_growth_plot():
     # print(plot_div)
     return {'daily_growth_plot': plot_div}
 
-#
-def india_map():
-    plot_div = maps.world_map()
-    return {'world_map': plot_div}
-#
-#
+def state_growth_plot():
+    state_plot_div=plots.state_daily_growth()
+
+    return {'daily_growth_state_plot': state_plot_div}
+
+
 def mapspage(request):
     plot_div = maps.usa_map()
     return render(request, template_name='pages/maps.html', context={'usa_map': plot_div})

@@ -2,4 +2,4 @@
     $('tr.category').on('click', function() {
        $(this).nextUntil('.category').fadeToggle();
     });
-});
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    });

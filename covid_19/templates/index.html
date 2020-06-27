@@ -7,16 +7,16 @@
 <link href="/static/assets/css/style-sidenav.css" rel="stylesheet" xmlns=""/>
 <!--<link href="/static/assets/css/style-map.css" rel="stylesheet"/>-->
 <link href="/static/assets/css/style-table.css" rel="stylesheet"/>
+
 <link rel="stylesheet" type="text/css"
       href="https://unpkg.com/bootstrap4-card-tables@1.2.0/dist/bootstrap4-card-tables.css">
 <link rel="stylesheet" type="text/css"
       href="https://unpkg.com/bootstrap4-card-tables@1.2.0/dist/bootstrap4-card-tables.min.css">
-
+<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
 {% endblock stylesheets %}
 
 {% block content %}
-
 
 <div id="main">
     {% include "includes/header.html" %}
@@ -36,49 +36,49 @@
                             </div>
                         </div>
                     </div>
-                    <table class="table align-items-center table-flush table-sortable table-hover card-table table-bordered"
-                           id="table">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th>State</th>
-                            <th>Confirmed</th>
-                            <th>Recovered</th>
-                            <th>Deaths</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for i, row in global_cases.iterrows %}
-
-                        <tr class="category search-eng">
-                            <td class="font-weight-bold">{{ row.state | truncatechars:14 }}</td>
-                            <td>{{ row.confirmed | intcomma }}</td>
-                            <td>{{ row.recovered | intcomma }}</td>
-                            <td>{{ row.deaths | intcomma }}</td>
-                        </tr>
-                        <tr class="subcategory dist-title">
-                            <td>District</td>
-                            <td>Confirmed</td>
-                            <td>Recovered</td>
-                            <td>Deaths</td>
-                        </tr>
-                        {% for key,value in district_cases.items %}
-                        {% ifequal key row.statecode %}
-                        {% for key1,value1 in value.items %}
-                        <tr class="subcategory">
-                            <td class="font-weight-bold">{{ key1 }}</td>
-                            <td>{{ value1.confirmed }}</td>
-                            <td>{{ value1.recovered }}</td>
-                            <td>{{ value1.deceased }}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endifequal %}
-                        {% endfor %}
-
-
-                        {% endfor %}
-                        </tbody>
-                    </table>
                 </div>
+                <table class="table align-items-center table-flush table-sortable table-hover card-table"
+                       id="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>State</th>
+                        <th>Confirmed</th>
+                        <th>Recovered</th>
+                        <th>Deaths</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i, row in global_cases.iterrows %}
+
+                    <tr class="category search-eng" id="{{ row.statecode }}" onclick="stateData(this)">
+                        <td class="font-weight-bold">{{ row.state | truncatechars:14 }}</td>
+                        <td>{{ row.confirmed | intcomma }}</td>
+                        <td>{{ row.recovered | intcomma }}</td>
+                        <td>{{ row.deaths | intcomma }}</td>
+                    </tr>
+                    <tr class="subcategory dist-title">
+                        <td>District</td>
+                        <td>Confirmed</td>
+                        <td>Recovered</td>
+                        <td>Deaths</td>
+                    </tr>
+                    {% for key,value in district_cases.items %}
+                    {% ifequal key row.statecode %}
+                    {% for key1,value1 in value.items %}
+                    <tr class="subcategory">
+                        <td class="font-weight-bold">{{ key1 | truncatechars:14 }}</td>
+                        <td>{{ value1.confirmed }}</td>
+                        <td>{{ value1.recovered }}</td>
+                        <td>{{ value1.deceased }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endifequal %}
+                    {% endfor %}
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+
             </div>
 
 
@@ -107,6 +107,34 @@
                             {% endautoescape %}
                         </div>
                     </div>
+                </div>
+                <div class="card shadow mt-2">
+                    <div class="card-header bg-transparent">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h6 class="text-uppercase text-muted ls-1 mb-1">India States | Daily</h6>
+                                <h2 class="mb-0">Daily Growth Statewise</h2>
+                                <h4 class="mb-0">Click on any state of the left table</h4>
+                            </div>
+                            <div class="col text-right">
+                                <a class="btn btn-sm btn-white" tabindex="0" role="button" data-toggle="popover"
+                                   data-trigger="focus" title="Info"
+                                   data-content="Daily time series of cases. Bars can be stacked for relative adjacent comparison by toggling 'confirmed' cases.">
+                                    &nbsp;<i class="fas fa-info">&nbsp;</i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% for key,value in daily_growth_state_plot.items %}
+                    <div class="card-body plotly" id="state_{{ key }}"
+                         style="display: none;">
+                        <div class="chart">
+                            {% autoescape off %}
+                            {{ value }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -139,7 +167,12 @@ $('.table-header').click(function(){
     $(this).nextUntil('tr.table-header').slideToggle(1000);
 });
 
+function stateData(obj) {
+var id="state_".concat(obj.id.toLowerCase());
+var chart_id = document.getElementById(id);
+chart_id.style.display=chart_id.style.display==='none'? '' : 'none';
 
+}
 
 
 

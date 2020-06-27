@@ -4,7 +4,13 @@
 <link href="/static/assets/css/style-sidenav.css" rel="stylesheet"/>
 
 <!-- Header -->
-<!--<h2>Covid Tracker India</h2>-->
+<div class="Header" id="myHeader">
+    <a class="headerLogo">
+        <header>
+            <center><i><font size="6">Covid Tracker India </font></i></center>
+        </header>
+    </a>
+</div>
 <div class="header pb-6 pt-5 pt-md-4 bg-secondary">
     <div class="container-fluid">
         <div class="header-body">
@@ -63,7 +69,8 @@
                         <div class="card-body ">
                             <div class="row">
                                 <div class="col">
-                                    <h3 class="text-uppercase" id="death-cls">Dea<span class="first-death">th</span>s</h3>
+                                    <h3 class="text-uppercase" id="death-cls">Dea<span class="first-death">th</span>s
+                                    </h3>
                                     <span class="h2 font-weight-bold mb-0" style="color:#ff0000">{{ num_deaths | intcomma }}</span>
                                     <h5 class="{% color 'dailydeceased' dailydeceased %}"><i
                                             class="{% arrow 'dailydeceased' dailydeceased %}"></i> {{ dailydeceased | intcomma }} </h5>
@@ -99,11 +106,11 @@
                                     </div>
                                 </div>
                             </div>
-<!--                            <p class="mt-3 mb-0 text-muted text-sm">-->
-                                <span class="{% color 'active_cases_rate' active_cases_rate %} mr-2"><i
-                                        class="{% arrow 'active_cases_rate' active_cases_rate %}"></i> {{ active_cases_rate | floatformat:"0" }}%</span>
-                                <span class="text-nowrap">Since last week</span>
-<!--                            </p>-->
+                            <!--                            <p class="mt-3 mb-0 text-muted text-sm">-->
+                            <span class="{% color 'active_cases_rate' active_cases_rate %} mr-2"><i
+                                    class="{% arrow 'active_cases_rate' active_cases_rate %}"></i> {{ active_cases_rate | floatformat:"0" }}%</span>
+                            <span class="text-nowrap">Since last week</span>
+                            <!--                            </p>-->
                         </div>
                     </div>
                 </div>

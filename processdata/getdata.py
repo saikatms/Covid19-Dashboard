@@ -267,14 +267,24 @@ def daily_confirmed():
     df = json_data['cases_time_series']
     return df
 
-# def daily_confirmed():
-#     # returns the daily reported cases for respective date,
-#     # segmented globally and by country
-#     df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_cases.csv')
-#     return df
-#
-#
-# def daily_deaths():
-#     # returns the daily reported deaths for respective date
-#     df = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/new_deaths.csv')
-#     return df
+def statewise_daily():
+    report_directory="https://api.covid19india.org/states_daily.json";
+    json_url=urlopen(report_directory)
+    json_data=json.loads(json_url.read())
+    states_daily=json_data['states_daily']
+    dataConfirmed =[]
+    data_deaths=[]
+    data_Recovered=[]
+    for i in states_daily:
+        if i['status']=="Confirmed":
+           dataConfirmed.append(i)
+        elif i['status']=="Deceased":
+            data_deaths.append(i)
+        elif i['status']=='Recovered':
+            data_Recovered.append(i)
+
+
+    stateRawData={"data_confirmed":dataConfirmed,"data_Death":data_deaths,"data_Recovered":data_Recovered}
+    # print(pd.DataFrame(states_daily))
+
+    return stateRawData
