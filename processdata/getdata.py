@@ -13,6 +13,7 @@ import pandas as pd
 
 # Different styles in zero-padding in date depend on operating systems
 from numpy import number
+from pandas.tests.io.conftest import jsonl_file
 
 if platform.system() == 'Linux':
     STRFTIME_DATA_FRAME_FORMAT = '%-m/%-d/%y'
@@ -20,21 +21,6 @@ elif platform.system() == 'Windows':
     STRFTIME_DATA_FRAME_FORMAT = '%#m/%#d/%y'
 else:
     STRFTIME_DATA_FRAME_FORMAT = '%-m/%-d/%y'
-
-
-def daily_report(date_string=None):
-    # Reports aggegrade data, dating as far back to 01-22-2020
-    # If passing arg, must use above date formatting '01-22-2020'
-    report_directory = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'
-
-    if date_string is None:
-        yesterday = datetime.date.today() - datetime.timedelta(days=2)
-        file_date = yesterday.strftime('%m-%d-%Y')
-    else:
-        file_date = date_string
-    # print(report_directory + file_date + '.csv')
-    df = pd.read_csv(report_directory + file_date + '.csv', dtype={"FIPS": str})
-    return df
 
 
 def daily_report_india(date_string=None):
@@ -53,11 +39,8 @@ def daily_report_india(date_string=None):
     json_url = urlopen(report_directory)
     df = json.loads(json_url.read())
     statewise_data = df['statewise']
-    # cases_time_series=df['cases_time_series'][-1]
-    # print(cases_time_series)
-    # # print()
-    return statewise_data
 
+    return statewise_data
 
 
 def todays_report(date_string=None):
@@ -73,16 +56,13 @@ def todays_report(date_string=None):
     json_url = urlopen(report_directory)
     df = json.loads(json_url.read())
     live_data = df['statewise'][0]
-    active_today=int(live_data['active'])
-    yesterday_data= df['cases_time_series'][-1]
-    active_yesterday=int(yesterday_data['totalconfirmed'])-(int(yesterday_data['totalrecovered'])+int(yesterday_data['totaldeceased']))
-    # print(type(cases_time_series))
-    # print(active_today,active_yesterday)
-    increased=active_today-active_yesterday
-    # print(increased)
-    live_data['active_incrased']=increased
+    active_today = int(live_data['active'])
+    yesterday_data = df['cases_time_series'][-1]
+    active_yesterday = int(yesterday_data['totalconfirmed']) - (
+                int(yesterday_data['totalrecovered']) + int(yesterday_data['totaldeceased']))
+    increased = active_today - active_yesterday
+    live_data['active_incrased'] = increased
     return live_data
-
 
 
 def confirmed_report():
@@ -120,13 +100,14 @@ def recovered_report():
     # df = pd.read_csv(
     #     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv')
     # return df
+
+
 def active_report():
     report_directory = "https://api.covid19india.org/data.json";
     json_url = urlopen(report_directory)
     df = json.loads(json_url.read())
     cases_time_series = df['cases_time_series']
     return cases_time_series
-
 
 
 def realtime_growth(date_string=None, weekly=False, monthly=False):
@@ -158,12 +139,13 @@ def realtime_growth(date_string=None, weekly=False, monthly=False):
     df4 = pd.Series()
     for conf_data in j_data:
         date = time.strftime("%m/%d/%y", time.strptime(conf_data['date'] + '2020', "%d %B %Y"))
-        df4[date] = int(conf_data['totalconfirmed'])-(int(conf_data['totaldeceased'])+int(conf_data['totalrecovered']))
+        df4[date] = int(conf_data['totalconfirmed']) - (
+                    int(conf_data['totaldeceased']) + int(conf_data['totalrecovered']))
     growth_df = pd.DataFrame([])
-    growth_df['Confirmed'], growth_df['Deaths'], growth_df['Recovered'],growth_df['active_cases_rate'] = df1, df2, df3,df4
-
+    growth_df['Confirmed'], growth_df['Deaths'], growth_df['Recovered'], growth_df[
+        'active_cases_rate'] = df1, df2, df3, df4
     growth_df.index = growth_df.index.rename('Date')
-
+    print(growth_df)
     yesterday = (pd.Timestamp('now').date() - pd.Timedelta(days=1)).strftime("%m/%d/%y")
     if date_string is not None:
         return growth_df.loc[growth_df.index == date_string]
@@ -193,6 +175,7 @@ def percentage_trends():
     """
     current = realtime_growth(weekly=True).iloc[-1]
     current = pd.to_numeric(current, downcast='integer')
+
     last_week = realtime_growth(weekly=True).iloc[-2]
     last_week = pd.to_numeric(last_week, downcast='integer')
     trends = round(number=((current - last_week) / last_week) * 100, ndigits=1)
@@ -202,9 +185,6 @@ def percentage_trends():
     trends_weekly = trends.append(pd.Series(data=rate_change, index=['Death_rate']))
     trends_dict = {"weekly_rate": trends_weekly}
     return trends_dict
-
-
-
 
 
 def global_cases():
@@ -219,6 +199,7 @@ def global_cases():
     df = df.groupby('state', as_index=False).sum()  # Dataframe mapper, combines rows where state value is the same
     df.sort_values(by=['confirmed'], ascending=False, inplace=True)
     return df
+
 
 #
 def usa_counties():
@@ -240,51 +221,161 @@ def usa_counties():
     return df
 
 
-def dist_data():
-    report_directory="https://api.covid19india.org/state_district_wise.json"
-    json_url=urlopen(report_directory)
-    json_data=json.loads(json_url.read())
-    dist_final={}
+def dist_data(statecode):
+    report_directory = "https://api.covid19india.org/state_district_wise.json"
+    json_url = urlopen(report_directory)
+    json_data = json.loads(json_url.read())
+    dist_final = {}
     for data in json_data:
-        state=json_data[data]
-        for dist in state:
-            if dist=="districtData":
-                dist_data=state[dist]
-                dist_data_today = {}
+        state = json_data[data]
+        if state['statecode']==statecode:
+            for dist in state:
+                if dist == "districtData":
+                    dist_data = state[dist]
+                    dist_data_today = {}
 
-                for d_data in dist_data:
-                    # print(d_data)
-                    dist_data_today[d_data] = dist_data[d_data]
-            dist_final[state['statecode']]=dist_data_today
+                    for d_data in dist_data:
+                        # print(d_data)
+                        dist_data_today[d_data] = dist_data[d_data]
+                dist_final[state['statecode']] = dist_data_today
+            break
     return dist_final
+
 
 def daily_confirmed():
     # returns the daily reported cases for respective date,
     # segmented globally and by country
-    report_directory="https://api.covid19india.org/data.json";
-    json_url=urlopen(report_directory)
-    json_data=json.loads(json_url.read())
+    report_directory = "https://api.covid19india.org/data.json";
+    json_url = urlopen(report_directory)
+    json_data = json.loads(json_url.read())
     df = json_data['cases_time_series']
     return df
 
+
 def statewise_daily():
-    report_directory="https://api.covid19india.org/states_daily.json";
-    json_url=urlopen(report_directory)
-    json_data=json.loads(json_url.read())
-    states_daily=json_data['states_daily']
-    dataConfirmed =[]
-    data_deaths=[]
-    data_Recovered=[]
+    report_directory = "https://api.covid19india.org/states_daily.json";
+    json_url = urlopen(report_directory)
+    json_data = json.loads(json_url.read())
+    states_daily = json_data['states_daily']
+    dataConfirmed = []
+    data_deaths = []
+    data_Recovered = []
     for i in states_daily:
-        if i['status']=="Confirmed":
-           dataConfirmed.append(i)
-        elif i['status']=="Deceased":
+        if i['status'] == "Confirmed":
+            dataConfirmed.append(i)
+        elif i['status'] == "Deceased":
             data_deaths.append(i)
-        elif i['status']=='Recovered':
+        elif i['status'] == 'Recovered':
             data_Recovered.append(i)
 
-
-    stateRawData={"data_confirmed":dataConfirmed,"data_Death":data_deaths,"data_Recovered":data_Recovered}
-    # print(pd.DataFrame(states_daily))
-
+    stateRawData = {"data_confirmed": dataConfirmed, "data_Death": data_deaths, "data_Recovered": data_Recovered}
     return stateRawData
+
+
+def stateDailydata(statecode):
+    state_daily=statewise_daily()
+
+    daily_cases_confirmed = state_daily['data_confirmed']
+    daily_cases_deaths = state_daily['data_Death']
+    daily_cases_recovered = state_daily['data_Recovered']
+    df_confirmed = pd.DataFrame(daily_cases_confirmed)
+    df_deaths = pd.DataFrame(daily_cases_deaths)
+    df_recovered = pd.DataFrame(daily_cases_recovered)
+    df_confirmed = df_confirmed.drop('status', 1)
+    df_deaths = df_deaths.drop('status', 1)
+    df_recovered = df_recovered.drop('status', 1)
+    df_confirmed['date'] = pd.to_datetime(df_confirmed.date)
+    df_deaths['date'] = pd.to_datetime(df_deaths.date)
+    df_recovered['date'] = pd.to_datetime(df_recovered.date)
+    df_confirmed=df_confirmed[['date',statecode.lower()]]
+    df_deaths=df_deaths[['date',statecode.lower()]]
+    df_recovered=df_recovered[['date',statecode.lower()]]
+    conf_today=df_confirmed.iloc[-1]
+    deaths_today=df_deaths.iloc[-1]
+    rec_today=df_recovered.iloc[-1]
+    active_inc=int(conf_today[1])-(int(deaths_today[1])+int(rec_today[1]))
+    return active_inc
+    # print(conf_today[1])
+
+
+def statewise_sunbrust_data():
+    report_directory = "https://api.covid19india.org/data.json";
+    json_url = urlopen(report_directory)
+    json_data = json.loads(json_url.read())
+    statewise = json_data['statewise']
+    stateData = []
+    for state in statewise:
+        if state['state'] == 'Total':
+            continue
+        else:
+            for key, value in state.items():
+                lists = {}
+
+                if key == "confirmed":
+                    lists["status"] = 'Confirmed'
+                    lists["state"] = state['state']
+                    lists["data"] = state['confirmed']
+                    stateData.append(lists)
+                elif key == "active":
+                    lists["status"] = 'Active'
+                    lists["state"] = state['state']
+                    lists["data"] = state['active']
+                    stateData.append(lists)
+
+                elif key == "deaths":
+                    lists["status"] = 'Deaths'
+                    lists["state"] = state['state']
+                    lists["data"] = state['deaths']
+                    stateData.append(lists)
+
+                elif key == "recovered":
+                    lists["status"] = 'Recovered'
+                    lists["state"] = state['state']
+                    lists["data"] = state['recovered']
+                    stateData.append(lists)
+
+    df = pd.DataFrame(stateData)
+    return df
+
+def statewisedata():
+    report_directory = "https://api.covid19india.org/data.json";
+    json_url = urlopen(report_directory)
+    json_data = json.loads(json_url.read())
+    statedata=json_data['statewise']
+    df=pd.DataFrame(statedata)
+    return df
+
+def distwies_sunbrust_data(statecode):
+    district_data=dist_data(statecode)
+    district_data=district_data[statecode]
+    stateData = []
+
+    for dist in district_data:
+        for key in district_data[dist]:
+            lists={}
+            if key=="confirmed":
+                lists["status"]="Confirmed"
+                lists["District"]=dist
+                lists["data"]=district_data[dist]["confirmed"]
+                stateData.append(lists)
+            elif key=="deceased":
+                lists["status"] = "Deceased"
+                lists["District"] = dist
+                lists["data"] = district_data[dist]["deceased"]
+                stateData.append(lists)
+
+            elif key=="recovered":
+                lists["status"] = "Recovered"
+                lists["District"] = dist
+                lists["data"] = district_data[dist]["recovered"]
+                stateData.append(lists)
+
+            elif key=="active":
+                lists["status"] = "Active"
+                lists["District"] = dist
+                lists["data"] = district_data[dist]["active"]
+                stateData.append(lists)
+
+    df=pd.DataFrame(stateData)
+    return df
+

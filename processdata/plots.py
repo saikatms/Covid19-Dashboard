@@ -1,11 +1,11 @@
-import json
-from datetime import time, date
+from itertools import starmap
 
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objs as go
 from plotly.graph_objs import Layout
 from plotly.offline import plot
+import plotly.express as px
+
 
 from . import getdata
 from .getdata import daily_confirmed
@@ -115,9 +115,10 @@ def daily_growth():
     return plot_div
 
 
-def state_daily_growth():
+def state_daily_growth(statecode):
     daily_cases = getdata.statewise_daily()
     daily_cases_confirmed=daily_cases['data_confirmed']
+
     daily_cases_deaths=daily_cases['data_Death']
     daily_cases_recovered=daily_cases['data_Recovered']
     df_confirmed=pd.DataFrame(daily_cases_confirmed)
@@ -129,37 +130,46 @@ def state_daily_growth():
     df_confirmed['date'] = pd.to_datetime(df_confirmed.date)
     df_deaths['date']=pd.to_datetime(df_deaths.date)
     df_recovered['date']=pd.to_datetime(df_recovered.date)
-
+    df_confirmed=df_confirmed[['date',statecode.lower()]]
+    df_deaths=df_confirmed[['date',statecode.lower()]]
+    df_recovered=df_confirmed[['date',statecode.lower()]]
+    # print(df_confirmed)
     layout = Layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', legend=dict(x=0.025, y=1), height=310,
                     margin=dict(t=0, l=15, r=10, b=0), barmode='stack')
 
-    dicts={}
-    for key in df_confirmed.keys():
-        # print(key)
-        fig = go.Figure(layout=layout)
-        lists = []
-        if key == "date":
-            continue
-        else:
-            # print(key)
-            daily_cases_trace = go.Bar(x=df_confirmed.date, y=df_confirmed[key], name="Confirmed", visible='legendonly')
-            daily_deaths_trace=go.Bar(x=df_deaths.date,y=df_deaths[key],name="Deaths",marker_color='#f5365c')
-            daily_recovered_trace=go.Bar(x=df_recovered.date,y=df_recovered[key],name="Recovered", marker_color='#2fb307')
-            fig.update_xaxes(
-                rangeselector=dict(
-                    buttons=list([
-                        dict(count=7, label='W', step='day', stepmode='backward'),
-                        dict(count=14, label='2W', step='day', stepmode='backward'),
-                        dict(count=1, label='M', step='month', stepmode='backward'),
-                        dict(count=3, label='3M', step='month', stepmode='backward'),
-                        dict(label='T', step='all')
-                    ]))
-            )
+    fig = go.Figure(layout=layout)
 
-            fig.update_yaxes(gridcolor='#fff')
-            fig.add_traces([daily_cases_trace,daily_deaths_trace,daily_recovered_trace])
-            plot_div = plot(fig, output_type='div', config={'displayModeBar': False})
-            dicts[key]=plot_div
+    # print(key)
+    daily_cases_trace = go.Bar(x=df_confirmed.date, y=df_confirmed[statecode.lower()], name="Confirmed", visible='legendonly')
+    daily_deaths_trace = go.Bar(x=df_deaths.date, y=df_deaths[statecode.lower()], name="Deaths", marker_color='#f5365c')
+    daily_recovered_trace = go.Bar(x=df_recovered.date, y=df_recovered[statecode.lower()], name="Recovered", marker_color='#2fb307')
+    fig.update_xaxes(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=7, label='W', step='day', stepmode='backward'),
+                dict(count=14, label='2W', step='day', stepmode='backward'),
+                dict(count=1, label='M', step='month', stepmode='backward'),
+                dict(count=3, label='3M', step='month', stepmode='backward'),
+                dict(label='T', step='all')
+            ]))
+    )
 
-    return dicts
+    fig.update_yaxes(gridcolor='#fff')
+    fig.add_traces([daily_cases_trace, daily_deaths_trace, daily_recovered_trace])
+    plot_div = plot(fig, output_type='div', config={'displayModeBar': False})
 
+    return plot_div
+
+
+
+def statewie_pie_sunbrust():
+    daily_cases = getdata.statewise_sunbrust_data()
+    fig=px.sunburst(daily_cases,path=['status','state'],values='data')
+    plot_div = plot(fig, output_type='div', config={'displayModeBar': False})
+    return plot_div
+
+def distwies_pie_sunbrust(statecode):
+    daily_cases=getdata.distwies_sunbrust_data(statecode)
+    fig = px.sunburst(daily_cases, path=['status', 'District'], values='data')
+    plot_div = plot(fig, output_type='div', config={'displayModeBar': False})
+    return plot_div
