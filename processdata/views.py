@@ -19,8 +19,7 @@ def index(request):
     daily_growth = daily_growth_plot()
     cases_dict = global_cases()
     statewise_pie_chart = statewise_sunburst()
-    #
-    # context = dict(report_dict, **trends_dict, **growth_dict, **cases_dict, **daily_growth, **world_map_dict)statewise_pie_chart daily_growth
+
     context = dict(report_dict, **trends_dict, **cases_dict,**statewise_pie_chart,**daily_growth)
     return render(request, template_name='index.html', context=context)
 
@@ -30,6 +29,7 @@ def index(request):
 
 def ind_report():
     df = getdata.todays_report(date_string=None)
+
     Confirmed = int(df['confirmed'])
     Deaths = int(df['deaths'])
     Recovered = int(df['recovered'])
@@ -38,9 +38,10 @@ def ind_report():
     dailyrecovered = int(df['deltarecovered'])
     total_active = int(df['active'])
     active_increases = int(df['active_incrased'])
+    lastupdatedtime=df['lastupdatedtime']
     df = {'Confirmed': Confirmed, 'Deaths': Deaths, 'Recovered': Recovered, "dailyrecovered": dailyrecovered,
           "dailyconfirmed": dailyconfirmed, "dailydeceased": dailydeceased, "active_cases": total_active,
-          "actived_increases": active_increases}
+          "actived_increases": active_increases,'lastupdatedtime':lastupdatedtime}
 
     death_rate = f'{(Deaths / Confirmed) * 100:.02f}%'
 
@@ -52,7 +53,9 @@ def ind_report():
                               'dailyrecovered': df['dailyrecovered'],
                               'actived_increases': df['actived_increases'],
                               'active_cases': df['active_cases'],
-                              'death_rate': death_rate}}
+                              'death_rate': death_rate,
+                              "lastupdatedtime":lastupdatedtime
+                              }}
 
     return report_dict["report"]
 

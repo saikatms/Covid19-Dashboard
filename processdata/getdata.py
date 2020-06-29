@@ -145,7 +145,7 @@ def realtime_growth(date_string=None, weekly=False, monthly=False):
     growth_df['Confirmed'], growth_df['Deaths'], growth_df['Recovered'], growth_df[
         'active_cases_rate'] = df1, df2, df3, df4
     growth_df.index = growth_df.index.rename('Date')
-
+    print(growth_df)
     yesterday = (pd.Timestamp('now').date() - pd.Timedelta(days=1)).strftime("%m/%d/%y")
     if date_string is not None:
         return growth_df.loc[growth_df.index == date_string]

@@ -8,6 +8,7 @@
     <a class="headerLogo">
         <header>
             <center><font size="6">Covid Tracker India </font></center>
+            <center><font size="2">Last Updated : {{ lastupdatedtime }}</font></center>
         </header>
     </a>
 </div>
@@ -24,7 +25,7 @@
                                     <h3 class="text-uppercase" id="conf-cls">Confi<span class="first">rm</span>ed</h3>
                                     <span class="h2 font-weight-bold mb-0" style="color:#ff0000;">{{ num_confirmed | intcomma }}</span>
                                     <h5 class="{% color 'dailyconfirmed' dailyconfirmed %}"><i
-                                            class="{% arrow 'dailyconfirmed' dailyconfirmed %}"></i> {{ dailyconfirmed | intcomma }} </h5>
+                                            class="{% arrow 'dailyconfirmed' dailyconfirmed %}"></i> {{ dailyconfirmed |                                        intcomma }} </h5>
                                 </div>
                                 <div class="col-auto">
                                     <div class="icon icon-shape bg-primary text-white rounded-circle shadow">
@@ -50,7 +51,8 @@
                                     </h3>
                                     <span class="h2 font-weight-bold mb-0" style="color:#15ff00;">{{ num_recovered | intcomma }}</span>
                                     <h5 class="{% color 'recovered' dailyrecovered %}"><i
-                                            class="{% arrow 'dailyrecovered' dailyrecovered %}"></i> {{ dailyrecovered | intcomma }} </h5>
+                                            class="{% arrow 'dailyrecovered' dailyrecovered %}"></i>
+                                        {{ dailyrecovered |  intcomma }} </h5>
                                 </div>
                                 <div class="col-auto">
                                     <div class="icon icon-shape bg-green text-white rounded-circle shadow">
@@ -73,7 +75,7 @@
                                     </h3>
                                     <span class="h2 font-weight-bold mb-0" style="color:#ff0000">{{ num_deaths | intcomma }}</span>
                                     <h5 class="{% color 'dailydeceased' dailydeceased %}"><i
-                                            class="{% arrow 'dailydeceased' dailydeceased %}"></i> {{ dailydeceased | intcomma }} </h5>
+                                            class="{% arrow 'dailydeceased' dailydeceased %}"></i> {{ dailydeceased |         intcomma }} </h5>
                                 </div>
                                 <div class="col-auto">
                                     <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -98,7 +100,7 @@
                                     <span class="h2 font-weight-bold mb-0"
                                           style="color:#ff8400">{{ active_cases }}</span>
                                     <h5 class="{% color 'dailydeceased' dailydeceased %}"><i
-                                            class="{% arrow 'dailydeceased' dailydeceased %}"></i> {{ actived_increases | intcomma }} </h5>
+                                            class="{% arrow 'dailydeceased' dailydeceased %}"></i> {{ actived_increases                                        | intcomma }} </h5>
                                 </div>
                                 <div class="col-auto">
                                     <div class="icon icon-shape bg-primary text-white rounded-circle shadow">
